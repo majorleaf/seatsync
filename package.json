@@ -1,19 +1,19 @@
 {
   "name": "seatsync",
   "version": "1.0.0",
-  "description": "movie reservation system",
-  "keywords": [],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/seatsync.git"
-  },
-  "license": "ISC",
-  "author": "majorleaf",
-  "type": "module",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/majorleaf/seatsync.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
   "dependencies": {
     "express": "^5.2.1",
     "pg": "^8.23.0"
