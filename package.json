@@ -19,6 +19,7 @@
     "@supabase/supabase-js": "^2.112.3",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "nodemon": "^3.1.14",
     "pg": "^8.23.0"
   },
   "devDependencies": {
@@ -26,6 +27,7 @@
     "@types/node": "^26.2.0",
     "@types/pg": "^8.21.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.12",
     "typescript": "^7.0.2"
   }
 }
