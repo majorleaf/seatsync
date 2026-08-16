@@ -36,6 +36,17 @@ app.post('/api/theaters', async (req, res) =>  {
         return res.status(400).json({ status: 'error', message: 'name and total_capacity'})
     }
 
+    try {
+       const result = await pool.query(
+           'INSERT INTO theaters (name, location, total_capacity) VALUES ($1, $2, $3) RETURNING *',
+           [name, location, total_capacity]
+       );
+       res.status(201).json(result.rows[0])
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'error', message: 'Failed to create theater'})
+    }
+
 })
 
 const PORT = process.env.PORT || 3000;
