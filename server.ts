@@ -47,6 +47,25 @@ app.post('/api/theaters', async (req, res) =>  {
         res.status(500).json({ status: 'error', message: 'Failed to create theater'})
     }
 
+});
+
+app.post('/movies', async (req, res) => {
+    const { title, description, release_date, end_date } = req.body;
+
+    if(!title || !description || !release_date || !end_date) {
+        return res.status(400).json({ status: 'error', message: 'title and description '})
+    }
+
+    try {
+        const result = await pool.query(
+            'INSERT INTO movies (title, description, release_date, end_date) VALUES ($1, $2, $3) RETURNING *',
+            [title, description, release_date, end_date]
+        );
+        res.status(201).json(result.rows[0])
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ status: 'error', message: 'Failed to create movie'})
+        }
 })
 
 const PORT = process.env.PORT || 3000;
