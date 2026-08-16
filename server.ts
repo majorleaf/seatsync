@@ -68,6 +68,19 @@ app.post('/movies', async (req, res) => {
         }
 })
 
+// GET All Movies
+app.get('/movies', async(req, res) => {
+    try {
+        const result = await pool.query( 'SELECT * FROM movies')
+        res.json(result.rows)
+
+    }catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'error', message: 'Failed to get movies'})
+    }
+});
+
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
