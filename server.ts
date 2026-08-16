@@ -29,6 +29,15 @@ app.get('/health', async (req, res) => {
     }
 });
 
+app.post('/api/theaters', async (req, res) =>  {
+    const { name, location, total_capacity } = req.body; 
+
+    if (!name || !total_capacity) {
+        return res.status(400).json({ status: 'error', message: 'name and total_capacity'})
+    }
+
+})
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
