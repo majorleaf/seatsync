@@ -49,7 +49,7 @@ app.post('/api/theaters', async (req, res) =>  {
 
 });
 
-app.post('/movies', async (req, res) => {
+app.post('/api/movies', async (req, res) => {
     const { title, description, release_date, end_date } = req.body;
 
     if(!title || !description || !release_date || !end_date) {
@@ -58,18 +58,18 @@ app.post('/movies', async (req, res) => {
 
     try {
         const result = await pool.query(
-            'INSERT INTO movies (title, description, release_date, end_date) VALUES ($1, $2, $3) RETURNING *',
+            'INSERT INTO movies (title, description, release_date, end_date) VALUES ($1, $2, $3, $4) RETURNING *',
             [title, description, release_date, end_date]
         );
         res.status(201).json(result.rows[0])
         } catch (error) {
-            console.error(error);
+            console.error( "Database error", error);
             res.status(500).json({ status: 'error', message: 'Failed to create movie'})
         }
 })
 
 // GET All Movies
-app.get('/movies', async(req, res) => {
+app.get('/api/movies', async(req, res) => {
     try {
         const result = await pool.query( 'SELECT * FROM movies')
         res.json(result.rows)
@@ -85,4 +85,4 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`)
-})
+}) 
