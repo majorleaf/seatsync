@@ -81,7 +81,7 @@ app.get('/api/movies', async(req, res) => {
 });
 
 // POST reservation lock using concurrency control
-app.post('/api/reservation/lock', async(req, res) => {
+app.post('/api/reservations/lock', async(req, res) => {
     const { schedule_id, seat_id, user_email } = req.body;
 
     // dedicated client for transactions
@@ -93,7 +93,7 @@ app.post('/api/reservation/lock', async(req, res) => {
         const checkQuery = `
         SELECT * FROM Reservations
         WHERE schedule_id = $1 AND seat_id = $2
-        AND (status = 'booked' OR  (status = 'locked' AND locked_at > NOW() - INTERVAL '10 
+        AND (status = 'booked' OR  (status = 'locked' AND locked_at > NOW() - INTERVAL  '10'))
         FOR UPDATE;
          `;
 
@@ -127,6 +127,10 @@ app.post('/api/reservation/lock', async(req, res) => {
         client.release();
     }
 });
+
+app.post('/api/reservations/checkout', async(req, res) => {
+    
+})
 
 
 const PORT = process.env.PORT || 3000;
