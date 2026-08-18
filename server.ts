@@ -92,7 +92,7 @@ app.post('/api/resevation/lock', async(req, res) => {
 
         const checkQuery = `
         SELECT * FROM Reservations
-        WHERE schedule\-id = $1 AND seat_id = $2
+        WHERE schedule_id = $1 AND seat_id = $2
         AND (status = 'booked' OR  (status = 'locked' AND locked_at > NOW() - INTERVAL '10 
         FOR UPDATE;
          `;
@@ -103,15 +103,25 @@ app.post('/api/resevation/lock', async(req, res) => {
          if (rows.length > 0) {
             await client.query('ROLLBACK');
             return res.status(409).json({ error: 'Seat is currently unabvailable.'});
-
+           }
             // If available 10 minutes lock
-            const insertQuery = `
-            INSERT `
+           const insertQuery = `
+            INSERT  INTO Reservations(schedule_id, seat_id, user_email, status, locked_at)
+            VALUES ($1, $2, $3, 'locked', NOW())
+            RETURNING *;
+            `;
+            const result = await client.query(insertQuery, [schedule_id, seat_id, user_email]);
 
-         }
-    } catch (error) {
+            await client.query('COMMIT');
+            res.status(201).json({
+                message: 'seat succesfully locked for 10 minutes!',
+                reservation: result.rows[0]
+            });
+
+         
+        } catch (error) {
         console.error("Transaction error:", error);
-    } finally {
+        } finally {
         client.release();
     }
 })
