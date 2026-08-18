@@ -81,7 +81,7 @@ app.get('/api/movies', async(req, res) => {
 });
 
 // POST reservation lock using concurrency control
-app.post('/api/resevation/lock', async(req, res) => {
+app.post('/api/reservation/lock', async(req, res) => {
     const { schedule_id, seat_id, user_email } = req.body;
 
     // dedicated client for transactions
