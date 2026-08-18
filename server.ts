@@ -120,11 +120,13 @@ app.post('/api/resevation/lock', async(req, res) => {
 
          
         } catch (error) {
+            await client.query('ROLLBACK');
         console.error("Transaction error:", error);
+        res.status(500).json({ error: 'Failed to process reservation.'});
         } finally {
         client.release();
     }
-})
+});
 
 
 const PORT = process.env.PORT || 3000;
