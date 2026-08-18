@@ -80,6 +80,42 @@ app.get('/api/movies', async(req, res) => {
     }
 });
 
+// POST reservation lock using concurrency control
+app.post('/api/resevation/lock', async(req, res) => {
+    const { schedule_id, seat_id, user_email } = req.body;
+
+    // dedicated client for transactions
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const checkQuery = `
+        SELECT * FROM Reservations
+        WHERE schedule\-id = $1 AND seat_id = $2
+        AND (status = 'booked' OR  (status = 'locked' AND locked_at > NOW() - INTERVAL '10 
+        FOR UPDATE;
+         `;
+
+         const { rows } = await client.query(checkQuery, [schedule_id, seat_id]);
+        
+         //if valid lock or booking exists , reject the request
+         if (rows.length > 0) {
+            await client.query('ROLLBACK');
+            return res.status(409).json({ error: 'Seat is currently unabvailable.'});
+
+            // If available 10 minutes lock
+            const insertQuery = `
+            INSERT `
+
+         }
+    } catch (error) {
+        console.error("Transaction error:", error);
+    } finally {
+        client.release();
+    }
+})
+
 
 const PORT = process.env.PORT || 3000;
 
