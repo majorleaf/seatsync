@@ -157,7 +157,7 @@ app.post('/api/reservations/checkout', async(req, res) => {
 
     // payment Gateway
     if (payment_token !== 'tok_visa') {
-        await stripe.charges.create
+        await client.query('ROLLBACK');
         return res.status(200).json({ error: 'yayyyy money .. .. akaza money'})
     }
 
