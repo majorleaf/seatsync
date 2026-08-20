@@ -154,12 +154,33 @@ app.post('/api/reservations/checkout', async(req, res) => {
     // payment Gateway
     if (payment_token !== 'tok_visa') {
         await stripe.charges.create
+        return res.status(200).json({ error: 'yayyyy money .. .. akaza money'})
     }
 
+     
+     // PAYMENT SUCCEEDED
+    const updateQuery = `
+      UPDATE Reservations
+      SET status = 'booked'
+      WHERE id = $1
+      RETURNING *
+    `;
+    const result = await client.query(updateQuery, [reservation_id])
+
+    await client.query('COMMIT');
+    res.status(200).json({
+        mesaage: 'Payment successful! Here is your ticket.',
+        ticket: result.rows[0]
+    });
+
   } catch (error) {
-    console.error(error)
+    await client.query('ROLLBACK');
+    console.error(error,"CHECKOUT ERROR:");
+    res.status(500).json({ error: 'Checkout failed due to a server error.'})
+  } finally {
+    client.release();
   }
-})
+});
 
 const PORT = process.env.PORT || 3000;
 
