@@ -1,9 +1,13 @@
 import express from "express";
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
-import stripe from 'stripe';
+import Stripe from 'stripe';
 
 dotenv.config();
+const stripeClient = new Stripe(process.env.SECRET_STRIPE_KEY || '', {
+    apiVersion: '2024-06-20'
+});
+
 
 const app =express();
 app.use(express.json());
@@ -139,7 +143,7 @@ app.post('/api/reservations/checkout', async(req, res) => {
 
     const checkQuery = `
      SELECT * FROM Reservations
-     WHERE id = $! AND status = 'locked'
+    WHERE id = $1 AND status = 'locked'
      AND locked_at > NOW() - INTERVAL '10 minutes'
      FOR UPDATE;
     `;
