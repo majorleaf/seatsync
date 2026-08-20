@@ -1,6 +1,7 @@
 import express from "express";
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+import stripe from 'stripe';
 
 dotenv.config();
 
@@ -129,9 +130,36 @@ app.post('/api/reservations/lock', async(req, res) => {
 });
 
 app.post('/api/reservations/checkout', async(req, res) => {
-    
-})
+  const { reservation_id, payment_token } = req.body;
+  
+  const client = await pool.connect();
 
+  try {
+    await client.query('BEGIN');
+
+    const checkQuery = `
+     SELECT * FROM Reservations
+     WHERE id = $! AND status = 'locked'
+     AND locked_at > NOW() - INTERVAL '10 minutes'
+     FOR UPDATE;
+    `;
+
+    const { rows } = await client.query(checkQuery, [reservation_id]);
+
+    if (rows.length === 0) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ error: 'reservation expired '})
+    }
+
+    // payment Gateway
+    if (payment_token !== 'tok_visa') {
+        await stripe.charges.create
+    }
+
+  } catch (error) {
+    console.error(error)
+  }
+})
 
 const PORT = process.env.PORT || 3000;
 
